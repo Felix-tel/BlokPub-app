@@ -54,38 +54,47 @@ button:active {
 <script>
 function trident() {
   const audio = new AudioContext();
-  
-  function tone(freq, start, duration, volume) {
+  audio.resume();
+
+  function siren(freq1, freq2, start, duration) {
     const osc = audio.createOscillator();
     const gain = audio.createGain();
-    
+
     osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(freq, audio.currentTime + start);
-    osc.frequency.exponentialRampToValueAtTime(
-      freq * 0.4,
+    osc.frequency.setValueAtTime(freq1, audio.currentTime + start);
+    osc.frequency.linearRampToValueAtTime(
+      freq2,
+      audio.currentTime + start + duration / 2
+    );
+    osc.frequency.linearRampToValueAtTime(
+      freq1,
       audio.currentTime + start + duration
     );
-    
-    gain.gain.setValueAtTime(volume, audio.currentTime + start);
-    gain.gain.exponentialRampToValueAtTime(
+
+    gain.gain.setValueAtTime(0.35, audio.currentTime + start);
+    gain.gain.setValueAtTime(0.35, audio.currentTime + start + duration - 0.05);
+    gain.gain.linearRampToValueAtTime(
       0.001,
       audio.currentTime + start + duration
     );
-    
+
     osc.connect(gain);
     gain.connect(audio.destination);
-    
+
     osc.start(audio.currentTime + start);
     osc.stop(audio.currentTime + start + duration);
   }
-  
-  tone(880, 0, 0.8, 0.4);
-  tone(440, 0.1, 1.2, 0.4);
-  tone(220, 0.3, 1.5, 0.4);
-  tone(110, 0.5, 1.7, 0.3);
-  
+
+  siren(700, 1400, 0, 0.5);
+  siren(1400, 700, 0.5, 0.5);
+  siren(700, 1600, 1, 0.5);
+  siren(1600, 700, 1.5, 0.5);
+  siren(900, 1800, 2, 0.6);
+  siren(1800, 900, 2.6, 0.6);
+
   document.getElementById("message").innerText =
     "⚡ Votre réponse a été entendue ! ⚡";
+
 }
 </script>
 
