@@ -159,8 +159,9 @@ if (choice === "buzzer") fin = 3.0;
 if (choice === "funny") fin = 2.2;
 
 // Signal de fin de communication
-tone(480, 480, fin + 0.2, 0.2, "square");
-tone(480, 480, fin + 0.55, 0.2, "square");
+for (let i = 0; i < 10; i++) {
+  tone(480, 480, fin + 0.2 + i * 0.35, 0.2, "square");
+}
 
 document.getElementById("message").innerText =
   "📞 Communication terminée !";
