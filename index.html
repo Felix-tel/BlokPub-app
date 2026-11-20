@@ -151,8 +151,19 @@ function playSound() {
     tone(400, 900, 1.8, 0.4, "triangle");
   }
 
-  document.getElementById("message").innerText =
-    "⚡ Votre réponse a été entendue ! ⚡";
+  let fin = 0;
+
+if (choice === "siren") fin = 3.2;
+if (choice === "alarm") fin = 2.35;
+if (choice === "buzzer") fin = 3.0;
+if (choice === "funny") fin = 2.2;
+
+// Signal de fin de communication
+tone(480, 480, fin + 0.2, 0.2, "square");
+tone(480, 480, fin + 0.55, 0.2, "square");
+
+document.getElementById("message").innerText =
+  "📞 Communication terminée !";
 }
 </script>
 </body>
