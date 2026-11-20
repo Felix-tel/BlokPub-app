@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -11,33 +10,44 @@ body {
   color: white;
   font-family: Arial, sans-serif;
   text-align: center;
-  padding: 30px 15px;
+  padding: 25px 15px;
+  margin: 0;
 }
-h1 {
-  font-size: 36px;
-  margin-top: 40px;
+h1 { font-size: 36px; margin-top: 35px; }
+p { color: #aaa; font-size: 18px; }
+select, button {
+  font-size: 20px;
+  padding: 15px;
+  border-radius: 12px;
 }
-p {
-  color: #aaa;
-  font-size: 18px;
-}
-button {
-  margin-top: 80px;
-  width: 85%;
-  max-width: 400px;
-  height: 250px;
-  border-radius: 30px;
-  border: 5px solid #ff4444;
-  background: linear-gradient(#ff3333, #990000);
+select {
+  margin: 25px;
+  background: #222;
   color: white;
-  font-size: 38px;
+  border: 1px solid #555;
+}
+#trigger {
+  display: block;
+  margin: 35px auto;
+  width: 90%;
+  max-width: 450px;
+  height: 260px;
+  background: linear-gradient(#ff3333, #990000);
+  border: 6px solid #ff5555;
+  border-radius: 35px;
+  color: white;
+  font-size: 36px;
   font-weight: bold;
-  box-shadow: 0 10px 30px #600;
-  cursor: pointer;
+  box-shadow: 0 0 25px #ff2222;
 }
-button:active {
-  transform: scale(0.96);
+#stop {
+  background: #333;
+  color: white;
+  border: 2px solid #777;
+  width: 180px;
 }
+label { font-size: 18px; }
+#message { margin-top: 25px; }
 </style>
 </head>
 <body>
@@ -45,58 +55,105 @@ button:active {
 <h1>🚫 BlokPub</h1>
 <p>Un démarcheur vous appelle ?</p>
 
-<button onclick="trident()">
+<select id="sound">
+  <option value="siren">🚨 Sirène</option>
+  <option value="alarm">🔔 Alarme</option>
+  <option value="buzzer">📢 Buzzer</option>
+  <option value="funny">🤡 Son comique</option>
+</select>
+
+<br>
+
+<label for="volume">Volume :</label>
+<input id="volume" type="range" min="0.1" max="1" step="0.1" value="0.7">
+
+<button id="trigger" onclick="playSound()">
   🔱<br>STOP PUB !<br>🔱
 </button>
 
-<p id="message"></p>
+<button id="stop" onclick="stopSound()">⏹ STOP</button>
+
+<p id="message">Prêt à riposter !</p>
 
 <script>
-function trident() {
-  const audio = new AudioContext();
-  audio.resume();
+let audio = null;
+let timers = [];
 
-  function siren(freq1, freq2, start, duration) {
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
+function stopSound() {
+  timers.forEach(t => clearTimeout(t));
+  timers = [];
+  if (audio) {
+    audio.close();
+    audio = null;
+  }
+  document.getElementById("message").innerText = "Son arrêté.";
+}
 
-    osc.type = "sawtooth";
-    osc.frequency.setValueAtTime(freq1, audio.currentTime + start);
-    osc.frequency.linearRampToValueAtTime(
-      freq2,
-      audio.currentTime + start + duration / 2
-    );
-    osc.frequency.linearRampToValueAtTime(
-      freq1,
-      audio.currentTime + start + duration
-    );
+function tone(freq1, freq2, start, duration, type="sawtooth") {
+  if (!audio) return;
 
-    gain.gain.setValueAtTime(0.35, audio.currentTime + start);
-    gain.gain.setValueAtTime(0.35, audio.currentTime + start + duration - 0.05);
-    gain.gain.linearRampToValueAtTime(
-      0.001,
-      audio.currentTime + start + duration
-    );
+  const osc = audio.createOscillator();
+  const gain = audio.createGain();
+  const volume = Number(document.getElementById("volume").value);
 
-    osc.connect(gain);
-    gain.connect(audio.destination);
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq1, audio.currentTime + start);
+  osc.frequency.linearRampToValueAtTime(
+    freq2, audio.currentTime + start + duration
+  );
 
-    osc.start(audio.currentTime + start);
-    osc.stop(audio.currentTime + start + duration);
+  gain.gain.setValueAtTime(volume, audio.currentTime + start);
+  gain.gain.setValueAtTime(volume, audio.currentTime + start + duration - 0.05);
+  gain.gain.linearRampToValueAtTime(
+    0.001, audio.currentTime + start + duration
+  );
+
+  osc.connect(gain);
+  gain.connect(audio.destination);
+
+  osc.start(audio.currentTime + start);
+  osc.stop(audio.currentTime + start + duration);
+}
+
+function playSound() {
+  stopSound();
+  audio = new AudioContext();
+
+  const choice = document.getElementById("sound").value;
+
+  if (choice === "siren") {
+    tone(700, 1400, 0, 0.5);
+    tone(1400, 700, 0.5, 0.5);
+    tone(700, 1600, 1, 0.5);
+    tone(1600, 700, 1.5, 0.5);
+    tone(900, 1800, 2, 0.6);
+    tone(1800, 900, 2.6, 0.6);
   }
 
-  siren(700, 1400, 0, 0.5);
-  siren(1400, 700, 0.5, 0.5);
-  siren(700, 1600, 1, 0.5);
-  siren(1600, 700, 1.5, 0.5);
-  siren(900, 1800, 2, 0.6);
-  siren(1800, 900, 2.6, 0.6);
+  if (choice === "alarm") {
+    for (let i = 0; i < 6; i++) {
+      tone(1200, 400, i * 0.4, 0.35, "square");
+    }
+  }
+
+  if (choice === "buzzer") {
+    tone(150, 150, 0, 1.5, "square");
+    tone(180, 180, 1.5, 1.5, "square");
+  }
+
+  if (choice === "funny") {
+    tone(500, 1000, 0, 0.25, "triangle");
+    tone(1000, 300, 0.25, 0.25, "triangle");
+    tone(300, 800, 0.5, 0.25, "triangle");
+    tone(800, 200, 0.75, 0.25, "triangle");
+    tone(600, 1200, 1, 0.4, "triangle");
+    tone(1200, 400, 1.4, 0.4, "triangle");
+    tone(400, 900, 1.8, 0.4, "triangle");
+  }
 
   document.getElementById("message").innerText =
     "⚡ Votre réponse a été entendue ! ⚡";
-
 }
 </script>
-
 </body>
 </html>
