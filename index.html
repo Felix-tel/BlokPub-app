@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -14,93 +15,130 @@
 
 body {
   margin: 0;
+  padding: 18px;
   font-family: Arial, sans-serif;
   background: #111827;
   color: white;
-  text-align: center;
-  padding: 20px;
 }
 
 .container {
-  max-width: 500px;
+  max-width: 520px;
   margin: auto;
 }
 
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
 .logo {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: bold;
   letter-spacing: 5px;
-  margin-top: 20px;
+  color: #14b8a6;
 }
 
 .subtitle {
   color: #9ca3af;
-  margin-bottom: 30px;
+  font-size: 14px;
+  margin-top: 5px;
 }
 
-.panel {
-  background: #1f2937;
-  padding: 20px;
-  border-radius: 16px;
-  margin-bottom: 20px;
-}
-
-label {
-  display: block;
-  margin-bottom: 12px;
-  font-weight: bold;
-}
-
-select, input, textarea {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 15px;
-  font-size: 16px;
-}
-
-textarea {
-  resize: vertical;
-  min-height: 90px;
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 button {
   width: 100%;
   border: none;
-  padding: 18px;
+  border-radius: 14px;
+  padding: 18px 14px;
   margin: 8px 0;
-  border-radius: 12px;
   font-size: 18px;
   font-weight: bold;
   cursor: pointer;
 }
 
-.siren {
-  background: #f97316;
+.messageButton {
+  background: #0d9488;
   color: white;
+  min-height: 85px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
-.voice {
+.sirenButton {
+  background: #f97316;
+  color: white;
+  min-height: 72px;
+}
+
+.stopButton {
+  background: #dc2626;
+  color: white;
+  min-height: 75px;
+  font-size: 24px;
+}
+
+.configButton {
+  background: #374151;
+  color: white;
+  font-size: 15px;
+}
+
+.panel {
+  background: #1f2937;
+  padding: 18px;
+  border-radius: 16px;
+  margin: 15px 0;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin: 14px 0 8px;
+}
+
+input[type="text"], textarea, select {
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: none;
+  font-size: 16px;
+  background: white;
+  color: #111827;
+}
+
+input[type="range"] {
+  width: 100%;
+}
+
+.saveButton {
   background: #0d9488;
   color: white;
 }
 
-.stop {
-  background: #dc2626;
-  color: white;
-  font-size: 24px;
-}
-
-.favorite {
+.backButton {
   background: #374151;
   color: white;
 }
 
-.small {
-  font-size: 13px;
-  color: #9ca3af;
+.hidden {
+  display: none;
 }
+
+.small {
+  color: #9ca3af;
+  font-size: 13px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.sectionTitle {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
 </style>
 </head>
 
@@ -108,73 +146,178 @@ button {
 
 <div class="container">
 
-<div class="logo">ZAPTEL</div>
-<div class="subtitle">C'est vous qui donnez le ton.</div>
+<header>
+  <div class="logo">ZAPTEL</div>
+  <div class="subtitle">C'est vous qui donnez le ton.</div>
+</header>
 
-<div class="panel">
+<!-- ÉCRAN INTERVENTION -->
 
-<label for="sound">CHOISIR UNE ALERTE</label>
+<div id="mainScreen">
 
-<select id="sound">
-<option value="siren">Sirène</option>
-<option value="alarm">Alarme</option>
-<option value="buzzer">Buzzer</option>
-<option value="funny">Humour</option>
-</select>
+  <div class="panel">
 
-<label>VOLUME</label>
-<input type="range" id="volume" min="0" max="100" value="80">
+    <button class="messageButton" id="btn1" onclick="speakFavorite(0)">
+    </button>
 
-<button class="siren" onclick="startSound()">
-🚨 ACTIVER
-</button>
+    <button class="messageButton" id="btn2" onclick="speakFavorite(1)">
+    </button>
 
-</div>
+    <button class="messageButton" id="btn3" onclick="speakFavorite(2)">
+    </button>
 
-<div class="panel">
+  </div>
 
-<label>🗣️ MESSAGE VOCAL</label>
+  <div class="panel">
 
-<textarea id="message" placeholder="Écrivez votre message ici..."></textarea>
+    <label for="soundType">TYPE DE SIRÈNE</label>
 
-<button class="voice" onclick="speakMessage()">
-🗣️ PARLER
-</button>
+    <select id="soundType">
+      <option value="siren">Sirène</option>
+      <option value="alarm">Alarme</option>
+      <option value="buzzer">Buzzer</option>
+      <option value="funny">Humour</option>
+    </select>
 
-</div>
+    <label for="volume">VOLUME</label>
 
-<div class="panel">
+    <input type="range" id="volume" min="0" max="100" value="80">
 
-<label>⭐ MES 3 MESSAGES FAVORIS</label>
+    <button class="sirenButton" onclick="startSound()">
+      🚨 SIRÈNE
+    </button>
 
-<input id="fav1" value="Attention ! Merci de vous calmer !">
-<button class="favorite" onclick="speakFavorite(1)">
-⭐ FAVORI 1
-</button>
+  </div>
 
-<input id="fav2" value="Stop ! Ce n'est pas acceptable !">
-<button class="favorite" onclick="speakFavorite(2)">
-⭐ FAVORI 2
-</button>
+  <button class="stopButton" onclick="stopAll()">
+    ⛔ STOP
+  </button>
 
-<input id="fav3" value="Je vous demande de vous arrêter !">
-<button class="favorite" onclick="speakFavorite(3)">
-⭐ FAVORI 3
-</button>
+  <button class="configButton" onclick="openConfig()">
+    ⚙️ CONFIGURATION
+  </button>
 
 </div>
 
-<button class="stop" onclick="stopAll()">
-⛔ STOP
-</button>
+<!-- ÉCRAN CONFIGURATION -->
 
-<p class="small">
+<div id="configScreen" class="hidden">
+
+  <div class="panel">
+
+    <h2 class="sectionTitle">⚙️ Configuration</h2>
+
+    <label for="config1">Message vocal 1</label>
+    <textarea id="config1"></textarea>
+
+    <label for="config2">Message vocal 2</label>
+    <textarea id="config2"></textarea>
+
+    <label for="config3">Message vocal 3</label>
+    <textarea id="config3"></textarea>
+
+    <button class="saveButton" onclick="saveConfig()">
+      💾 ENREGISTRER
+    </button>
+
+    <button class="backButton" onclick="closeConfig()">
+      ↩ RETOUR
+    </button>
+
+  </div>
+
+</div>
+
+<footer class="small">
 ZAPTEL — Réagir en un instant.
-</p>
+</footer>
 
 </div>
 
 <script>
+
+// MESSAGES
+
+let messages = [
+  "Attention ! Veuillez vous calmer !",
+  "Je vous demande de reculer !",
+  "Cette situation est inacceptable !"
+];
+
+function loadMessages() {
+  try {
+    const saved = localStorage.getItem("zaptel_messages");
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed) && parsed.length === 3) {
+        messages = parsed;
+      }
+    }
+  } catch(e) {}
+
+  updateButtons();
+}
+
+function updateButtons() {
+  document.getElementById("btn1").textContent = messages[0];
+  document.getElementById("btn2").textContent = messages[1];
+  document.getElementById("btn3").textContent = messages[2];
+}
+
+function openConfig() {
+  stopAll();
+
+  document.getElementById("mainScreen").classList.add("hidden");
+  document.getElementById("configScreen").classList.remove("hidden");
+
+  document.getElementById("config1").value = messages[0];
+  document.getElementById("config2").value = messages[1];
+  document.getElementById("config3").value = messages[2];
+}
+
+function saveConfig() {
+
+  messages = [
+    document.getElementById("config1").value.trim(),
+    document.getElementById("config2").value.trim(),
+    document.getElementById("config3").value.trim()
+  ];
+
+  localStorage.setItem("zaptel_messages", JSON.stringify(messages));
+
+  updateButtons();
+
+  closeConfig();
+}
+
+function closeConfig() {
+  document.getElementById("configScreen").classList.add("hidden");
+  document.getElementById("mainScreen").classList.remove("hidden");
+}
+
+// VOIX
+
+function speakFavorite(index) {
+
+  const text = messages[index];
+
+  if (!text) return;
+
+  stopAll();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+
+  utterance.lang = "fr-FR";
+  utterance.rate = 1.1;
+  utterance.pitch = 1;
+  utterance.volume = document.getElementById("volume").value / 100;
+
+  speechSynthesis.speak(utterance);
+}
+
+// SIRENE
 
 let audioContext = null;
 let oscillator = null;
@@ -182,6 +325,7 @@ let gainNode = null;
 let soundInterval = null;
 
 function stopSound() {
+
   if (soundInterval) {
     clearInterval(soundInterval);
     soundInterval = null;
@@ -211,11 +355,12 @@ function startSound() {
   audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
   gainNode = audioContext.createGain();
+
   gainNode.gain.value = document.getElementById("volume").value / 100;
 
   gainNode.connect(audioContext.destination);
 
-  const type = document.getElementById("sound").value;
+  const type = document.getElementById("soundType").value;
 
   oscillator = audioContext.createOscillator();
   oscillator.connect(gainNode);
@@ -238,9 +383,11 @@ function startSound() {
   oscillator.start();
 
   if (type === "siren") {
+
     let high = true;
 
     soundInterval = setInterval(() => {
+
       if (!audioContext || !oscillator) return;
 
       oscillator.frequency.setValueAtTime(
@@ -249,13 +396,17 @@ function startSound() {
       );
 
       high = !high;
+
     }, 500);
+
   }
 
   else if (type === "alarm") {
+
     let high = true;
 
     soundInterval = setInterval(() => {
+
       if (!audioContext || !oscillator) return;
 
       oscillator.frequency.setValueAtTime(
@@ -264,48 +415,14 @@ function startSound() {
       );
 
       high = !high;
+
     }, 300);
-  }
-}
 
-function speakMessage() {
-
-  const text = document.getElementById("message").value.trim();
-
-  if (!text) {
-    alert("Veuillez écrire un message.");
-    return;
   }
 
-  stopAll();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  utterance.lang = "fr-FR";
-  utterance.rate = 1.1;
-  utterance.pitch = 1;
-  utterance.volume = document.getElementById("volume").value / 100;
-
-  speechSynthesis.speak(utterance);
 }
 
-function speakFavorite(number) {
-
-  let text = document.getElementById("fav" + number).value.trim();
-
-  if (!text) return;
-
-  stopAll();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-
-  utterance.lang = "fr-FR";
-  utterance.rate = 1.1;
-  utterance.pitch = 1;
-  utterance.volume = document.getElementById("volume").value / 100;
-
-  speechSynthesis.speak(utterance);
-}
+// STOP GÉNÉRAL
 
 function stopAll() {
 
@@ -315,6 +432,10 @@ function stopAll() {
     speechSynthesis.cancel();
   }
 }
+
+// INITIALISATION
+
+loadMessages();
 
 </script>
 
