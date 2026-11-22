@@ -436,7 +436,12 @@ function stopAll() {
 // INITIALISATION
 
 loadMessages();
-
+// MEMORISATION DU VOLUME
+const volumeSlider = document.getElementById("volume");
+volumeSlider.value = localStorage.getItem("zaptel_volume") || 80;
+volumeSlider.addEventListener("input", function() {
+  localStorage.setItem("zaptel_volume", this.value);
+});
 </script>
 
 </body>
